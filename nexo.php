@@ -1,17 +1,30 @@
 <?php 
 include_once "estacionamiento.php";
+
 $patente = $_POST['patente'];
 $accion = $_POST['accion'];
 
-echo $patente;
+/*echo $patente;
 echo "<br>";
-echo $accion;
+echo $accion;*/
 
-if ($accion == "estacionar") 
+switch ($accion) 
 {
-	estacionamiento::Guardar($patente);
+	case 'estacionar':
+		estacionamiento::Guardar($patente);
+		header("location:index.php");
+		break;
+	case 'salir':
+		estacionamiento::Sacar($patente);
+		break;
+	case 'estacionar':
+		estacionamiento::Sacar($patente);
+		break;
+	default:
+		break;
 }
 
-header("location:index.php");
+
+//header("location:index.php");
 
  ?>
