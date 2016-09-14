@@ -36,64 +36,85 @@ class estacionamiento
 		
 
 	}
-	public static function Sacar($patente)
+	
+		public static function GuardarListado($listado)
 	{
-	    $ListaDeAutosLeida = estacionamiento::Leer();
-		//$archivo=fopen("archivos/estacionados.txt", "r");//escribe y mantiene la informacion existente
+		$archivo=fopen("archivos/estacionados.txt", "w"); 	
 
-	    foreach ($ListaDeAutosLeida as $auto ) 
-	    {
-	    	if ($auto[0] == $patente) 
-	    	{
-	    		$inicio = $auto[1];
-	    		$salida = date("Y-m-d H:i:s");
-
-	    		$diferencia = strtotime($salida) - strtotime($inicio);
-	    		$importe = $diferencia * 10;
-	    		//se guarda en ticket.txt
-
-	    		echo $importe;
-
-	    	}
-	    }
-		/*	
-		while(!feof($archivo))
+		foreach ($listado as $auto) 
 		{
-			$renglon=fgets($archivo);
-			
-			$auto=explode("=>", $renglon);
-			
-			$auto[0]=trim($auto[0]);
-			if($auto[0] != $patente && $auto != "")
-				$ListaDeAutosLeida[]=$auto;
+	 		  if($auto[0]!=""){
+	 		  		$dato=$auto[0] ."=>".$auto[1]."\n" ;
+					fwrite($archivo, $dato);
+	 		  }	 	
 		}
-
 		fclose($archivo);
 
-		$archivo=fopen("archivos/estacionados.txt", "w");//escribe y mantiene la informacion existente	
-			 
-		foreach ($ListaDeAutosLeida as $auto) 
-		{
-			$fecha = $auto[1];
-			$renglon=$auto[0]."=>".$fecha;
-			fwrite($archivo, $renglon); 
-		}
-				 
-		fclose($archivo);*/
-		 
-			
 	}
+
+	public static function Sacar($patente)
+	{
+
+		$listado=estacionamiento::Leer();
+		$ListadoAdentro=array();
+		$estaElVehiculo=false;
+		foreach ($listado as $auto) 
+		{
+			if($auto[0]==$patente)
+			{
+				$estaElVehiculo=true;
+				$inicio=$auto[1];	
+				$ahora=date("Y-m-d H:i:s"); 			 
+ 				$diferencia = strtotime($ahora)- strtotime($inicio) ;
+ 				//http://www.w3schools.com/php/func_date_strtotime.asp
+ 				$importe=$diferencia*15;
+				$mensaje= "tiempo transcurrido:".$diferencia." segundos <br> costo $importe ";
+				
+				$archivo=fopen("archivos/facturacion.txt", "a"); 		  
+		 		$dato=$patente ."=> $".$importe."\n" ;
+		 		fwrite($archivo, $dato);
+		 		fclose($archivo);
+
+
+			}
+			else
+			{
+				$ListadoAdentro[]=$auto;				
+			}
+		}// fin del foreach
+
+		if(!$estaElVehiculo)
+		{
+			$mensaje= "no esta esa patente!!!";
+		}
+
+
+		estacionamiento::GuardarListado($ListadoAdentro);
+
+
+		echo $mensaje;
+	}
+
 
 	public static function CrearTablaEstacionados()
 	{
-	
-	}
+		$lista =estacionamiento::Leer();
+		$archivo=fopen("archivos/tablaestacionados.php","w");
 
-	public static function GuardarListado($listado)
-	{
+
+		$TablaCompleta=" <table border=1><th> patente </th><th> Ingreso</th>";
+		$renglon="";
 		
+		foreach ($lista as $auto) 
+		{
+			$renglon= $renglon."<tr> <td> ".$auto[0] ." </td> <td> ". $auto[1]."</td> </tr>" ; 
+		
+  		}
+		$TablaCompleta =$TablaCompleta.$renglon." </table>";
 
+			fwrite($archivo, $TablaCompleta);
 	}
+
 
 	
 

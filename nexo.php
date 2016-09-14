@@ -16,9 +16,7 @@ switch ($accion)
 		break;
 	case 'salir':
 		estacionamiento::Sacar($patente);
-		break;
-	case 'estacionar':
-		estacionamiento::Sacar($patente);
+		header("location:index.php");
 		break;
 	default:
 		break;
